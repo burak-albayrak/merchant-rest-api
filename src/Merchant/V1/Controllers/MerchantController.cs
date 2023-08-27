@@ -71,6 +71,7 @@ public class MerchantController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult Delete(string id)
     {
+        //
         var existingMerchant = _service.Get(id);
         if (existingMerchant == null)
         {
