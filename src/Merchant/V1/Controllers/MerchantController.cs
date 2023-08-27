@@ -1,3 +1,4 @@
+using Merchant.Exceptions;
 using Merchant.Services;
 using Merchant.V1.Models.RequestModels;
 using Merchant.V1.Models.ResponseModels;
@@ -20,6 +21,7 @@ public class MerchantController : ControllerBase
     [HttpGet]
     public IActionResult Get([FromQuery] string id)
     {
+        throw new NotFound("error lan");
         var merchant = _service.Get(id);
         if (merchant == null)
         {

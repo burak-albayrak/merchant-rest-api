@@ -1,4 +1,5 @@
 using Merchant.Configs;
+using Merchant.Middlewares;
 using Merchant.Repositories;
 using Merchant.Services;
 using MongoDB.Driver;
@@ -70,6 +71,7 @@ public class Startup
         app.UseDeveloperExceptionPage(); // Error handling
         app.UseSwagger(); //Swagger
         app.UseSwaggerUI(); //Swagger
+        app.UseMiddleware<ErrorHandlingMiddleware>();
         app.UseCors("AllowAll"); // Enforce CORS policies.
         app.UseResponseCompression(); // Compresses data sent from the server to improve transmission speed.
         app.UseRouting(); //  Determine which Controller a incoming request should be routed to.
