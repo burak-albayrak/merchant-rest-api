@@ -59,7 +59,7 @@ public class MerchantController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Post([FromBody] MerchantCreateRequestModel request)
+    public IActionResult Post([FromQuery] MerchantCreateRequestModel request)
     {
         _service.Post(request);
 
@@ -67,7 +67,7 @@ public class MerchantController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult Put(string id, [FromBody] MerchantCreateRequestModel request)
+    public IActionResult Put(string id, [FromQuery] MerchantCreateRequestModel request)
     {
         var existingMerchant = _service.Get(id);
         if (existingMerchant == null)
@@ -81,7 +81,7 @@ public class MerchantController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-    public IActionResult PatchName(string id, [FromBody] MerchantCreateRequestModel request)
+    public IActionResult PatchName(string id, [FromQuery] string newName)
     {
         var existingMerchant = _service.Get(id);
         if (existingMerchant == null)
@@ -92,8 +92,8 @@ public class MerchantController : ControllerBase
 
         try
         {
-            _service.UpdateName(id, request.Name);
-            _logger.LogInformation("Merchant name updated: {MerchantId}, New Name: {NewName}", id, request.Name);
+            _service.UpdateName(id, newName);
+            _logger.LogInformation("Merchant name updated: {MerchantId}, New Name: {NewName}", id, newName);
             
             return NoContent();
         }
@@ -103,6 +103,7 @@ public class MerchantController : ControllerBase
             return StatusCode(500, "An error occurred while processing your request.");
         }
     }
+
 
     [HttpDelete("{id}")]
     public IActionResult Delete(string id)
