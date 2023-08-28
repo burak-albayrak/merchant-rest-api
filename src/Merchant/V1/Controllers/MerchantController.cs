@@ -48,53 +48,90 @@ public class MerchantController : ControllerBase
     [HttpGet]
     public IActionResult GetAll()
     {
-        var allMerchants = _service.GetAll();
-
-        if (allMerchants == null || allMerchants.Count == 0)
+        try
         {
-            return NotFound("No merchants found!");
-        }
+            _logger.LogInformation("Getting all merchants");
 
-        return Ok(allMerchants);
+            var allMerchants = _service.GetAll();
+
+            if (allMerchants == null || allMerchants.Count == 0)
+            {
+                _logger.LogWarning("No merchants found!");
+                return NotFound("No merchants found!");
+            }
+
+            _logger.LogInformation("Retrieved {MerchantCount} merchants", allMerchants.Count);
+            return Ok(allMerchants);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while getting all merchants");
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
     }
 
     [HttpPost]
     public IActionResult Post([FromQuery] MerchantCreateRequestModel request)
     {
-        _service.Post(request);
+        try
+        {
+            _logger.LogInformation("Creating a new merchant");
 
-        return Created("Created", null);
+            _service.Post(request);
+
+            _logger.LogInformation("Merchant created successfully");
+            return Created("Created", null);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while creating a new merchant");
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
     }
 
     [HttpPut("{id}")]
     public IActionResult Put(string id, [FromQuery] MerchantCreateRequestModel request)
     {
-        var existingMerchant = _service.Get(id);
-        if (existingMerchant == null)
+        try
         {
-            return NotFound("Merchant: " + id + " not found!");
+            _logger.LogInformation("Updating merchant with id: {MerchantId}", id);
+
+            var existingMerchant = _service.Get(id);
+            if (existingMerchant == null)
+            {
+                _logger.LogWarning("Merchant with id {MerchantId} not found!", id);
+                return NotFound("Merchant: " + id + " not found!");
+            }
+
+            _service.Update(id, request);
+
+            _logger.LogInformation("Merchant updated successfully");
+            return NoContent();
         }
-
-        _service.Update(id, request);
-
-        return NoContent();
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while updating the merchant with id {MerchantId}", id);
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
     }
 
     [HttpPatch("{id}")]
     public IActionResult PatchName(string id, [FromQuery] string newName)
     {
-        var existingMerchant = _service.Get(id);
-        if (existingMerchant == null)
-        {
-            _logger.LogWarning("Merchant with id {MerchantId} not found!", id);
-            return NotFound("Merchant: " + id + " not found!");
-        }
-
         try
         {
+            _logger.LogInformation("Updating name for merchant with id: {MerchantId}", id);
+
+            var existingMerchant = _service.Get(id);
+            if (existingMerchant == null)
+            {
+                _logger.LogWarning("Merchant with id {MerchantId} not found!", id);
+                return NotFound("Merchant: " + id + " not found!");
+            }
+
             _service.UpdateName(id, newName);
+
             _logger.LogInformation("Merchant name updated: {MerchantId}, New Name: {NewName}", id, newName);
-            
             return NoContent();
         }
         catch (Exception ex)
@@ -108,14 +145,26 @@ public class MerchantController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult Delete(string id)
     {
-        var existingMerchant = _service.Get(id);
-        if (existingMerchant == null)
+        try
         {
-            return NotFound("Merchant: " + id + " not found!");
+            _logger.LogInformation("Deleting merchant with id: {MerchantId}", id);
+
+            var existingMerchant = _service.Get(id);
+            if (existingMerchant == null)
+            {
+                _logger.LogWarning("Merchant with id {MerchantId} not found!", id);
+                return NotFound("Merchant: " + id + " not found!");
+            }
+
+            _service.Delete(id);
+
+            _logger.LogInformation("Merchant deleted successfully: {MerchantId}", id);
+            return NoContent();
         }
-
-        _service.Delete(id);
-
-        return NoContent();
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while deleting the merchant with id {MerchantId}", id);
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
     }
 }

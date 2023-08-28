@@ -7,7 +7,6 @@ namespace Merchant.Repositories;
 public class Repository : IRepository //Database(data access layer) (database ile haberleşecek olan katman)
 {
     private IMongoCollection<Merchant> _collection;
-
     public Repository(IMongoCollection<Merchant> collection)
     {
         _collection = collection;
@@ -16,12 +15,14 @@ public class Repository : IRepository //Database(data access layer) (database il
     public Merchant Get(string id)
     {
         var merchant = _collection.Find(i => i.Id == id).FirstOrDefault();
+
         return merchant;
     }
 
     public List<Merchant> GetAll()
     {
         var allMerchants = _collection.Find(Builders<Merchant>.Filter.Empty).ToList();
+
         return allMerchants;
     }
 
