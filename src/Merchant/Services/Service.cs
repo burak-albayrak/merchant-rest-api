@@ -46,6 +46,7 @@ public class Service : IService
 
         _repository.Update(existingMerchant);
     }
+
     public void Delete(string id)
     {
         var existingMerchant = _repository.Get(id);
@@ -56,6 +57,7 @@ public class Service : IService
 
         _repository.Delete(existingMerchant);
     }
+
     public void UpdateName(string id, string newName)
     {
         var existingMerchant = _repository.Get(id);

@@ -7,6 +7,7 @@ namespace Merchant.Repositories;
 public class Repository : IRepository //Database(data access layer) (database ile haberleşecek olan katman)
 {
     private IMongoCollection<Merchant> _collection;
+
     public Repository(IMongoCollection<Merchant> collection)
     {
         _collection = collection;
@@ -41,6 +42,7 @@ public class Repository : IRepository //Database(data access layer) (database il
 
         _collection.UpdateOne(filter, update);
     }
+
     public void Delete(Merchant existingMerchant)
     {
         var filter = Builders<Merchant>.Filter.Eq(m => m.Id, existingMerchant.Id);
