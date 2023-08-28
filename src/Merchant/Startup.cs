@@ -3,6 +3,7 @@ using Merchant.Middlewares;
 using Merchant.Repositories;
 using Merchant.Services;
 using MongoDB.Driver;
+using FluentValidation.AspNetCore;
 
 namespace Merchant;
 
@@ -21,6 +22,7 @@ public class Startup
     }
 
     public IConfiguration Configuration { get; }
+    public MongoDBSettings MongoDbSettings { get; set; }
 
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
@@ -42,22 +44,23 @@ public class Startup
         });
 
         // Getting configuration values for MongoDBSettings class from application configuration.
-        services.Configure<MongoDBSettings>(Configuration.GetSection(nameof(MongoDBSettings)));
-        var settings = Configuration.GetSection(nameof(MongoDBSettings)).Get<MongoDBSettings>();
+        MongoDbSettings = Configuration.GetSection(nameof(MongoDBSettings)).Get<MongoDBSettings>();
         services.AddSingleton(
-            settings); // Register MongoDBSettings object to be created only once throughout the application.
+            MongoDbSettings); // Register MongoDBSettings object to be created only once throughout the application.
         services.AddControllers(); // Adding ASP.NET Core Web API controllers.
         services.AddEndpointsApiExplorer(); // Adding the service required for generating API documentation.
         services.AddSwaggerGen(); // Adding Swagger documentation generation feature.
         services.AddResponseCompression(); // Adding compression service for responses.
         // Adding a concrete Service class corresponding to the IService interface.
         services.AddSingleton<IService, Service>();
+        services.AddControllers()
+            .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
         // Adding a concrete Repository class corresponding to the IRepository interface.
         services.AddSingleton<IRepository, Repository>(_ => // bu neden "_" ????????
         {
-            var client = new MongoClient(settings.ConnectionString);
-            var database = client.GetDatabase(settings.DBName);
-            var collection = database.GetCollection<Merchant>(settings.CollectionName);
+            var client = new MongoClient(MongoDbSettings.ConnectionString);
+            var database = client.GetDatabase(MongoDbSettings.DBName);
+            var collection = database.GetCollection<Merchant>(MongoDbSettings.CollectionName);
 
             return new Repository(collection);
         });

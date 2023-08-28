@@ -7,6 +7,6 @@ public interface IRepository
     public Merchant Get(string id);
     List<Merchant> GetAll();
     public void Post(MerchantCreateRequestModel request);
+    void Delete(Merchant existingMerchant);
     void Update(Merchant existingMerchant);
-    void Delete(Merchant existingMerchant); // Yeni Delete metodu
 }

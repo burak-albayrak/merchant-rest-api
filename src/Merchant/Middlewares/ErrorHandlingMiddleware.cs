@@ -6,10 +6,12 @@ namespace Merchant.Middlewares;
 public class ErrorHandlingMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly ILogger<ErrorHandlingMiddleware> _logger;
 
-    public ErrorHandlingMiddleware(RequestDelegate next)
+    public ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandlingMiddleware> logger)
     {
         _next = next;
+        _logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext httpContext)
@@ -20,11 +22,12 @@ public class ErrorHandlingMiddleware
         }
         catch (ErrorDetail e)
         {
+            _logger.LogError(e, "[{StatusCode}] - {ErrorMessage}", e.StatusCode, e.Message);
             await HandleError(httpContext, e);
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            Console.WriteLine("Error Yo");
+            _logger.LogError(e, "[500] - {ErrorMessage}", e.Message);
         }
     }
 

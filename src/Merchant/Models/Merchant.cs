@@ -4,13 +4,13 @@ namespace Merchant;
 
 public class Merchant
 {
-    [BsonElement("name")]
+    [BsonElement("name")] 
     public string Name { get; set; }
-    [BsonElement("_id")]
+    [BsonElement("_id")] 
     public string Id { get; set; }
-    [BsonElement("address")]
+    [BsonElement("address")] 
     public Address Address { get; set; }
-
+    
     public Merchant(string name, Address address)
     {
         Id = Guid.NewGuid().ToString();

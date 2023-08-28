@@ -1,3 +1,4 @@
+using Merchant.Exceptions;
 using Merchant.Repositories;
 using Merchant.V1.Models.RequestModels;
 
@@ -7,10 +8,12 @@ namespace Merchant.Services;
 public class Service : IService
 {
     private readonly IRepository _repository;
+    private readonly ILogger<Service> _logger;
 
-    public Service(IRepository repository)
+    public Service(IRepository repository, ILogger<Service> logger)
     {
         _repository = repository;
+        _logger = logger;
     }
 
     public Merchant Get(string id)
@@ -35,7 +38,7 @@ public class Service : IService
         var existingMerchant = _repository.Get(id);
         if (existingMerchant == null)
         {
-            throw new NotFoundException("Merchant not found!");
+            throw new NotFound("Merchant not found");
         }
 
         existingMerchant.Name = request.Name;
@@ -48,16 +51,21 @@ public class Service : IService
         var existingMerchant = _repository.Get(id);
         if (existingMerchant == null)
         {
-            throw new NotFoundException("Merchant not found!");
+            throw new NotFound("Merchant not found");
         }
 
         _repository.Delete(existingMerchant);
     }
-}
-
-public class NotFoundException : Exception
-{
-    public NotFoundException(string message) : base(message)
+    public void UpdateName(string id, string newName)
     {
+        var existingMerchant = _repository.Get(id);
+        if (existingMerchant == null)
+        {
+            throw new NotFound("Merchant not found");
+        }
+
+        existingMerchant.Name = newName;
+
+        _repository.Update(existingMerchant);
     }
 }
