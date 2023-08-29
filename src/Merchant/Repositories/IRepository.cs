@@ -8,5 +8,5 @@ public interface IRepository
     List<Merchant> GetAll();
     public void Post(MerchantCreateRequestModel request);
     void Delete(Merchant existingMerchant);
-    void Update(Merchant existingMerchant);
+    long Update(Merchant existingMerchant);
 }

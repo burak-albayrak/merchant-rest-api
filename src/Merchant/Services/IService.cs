@@ -6,8 +6,8 @@ public interface IService
 {
     public Merchant Get(string id);
     public void Post(MerchantCreateRequestModel merchantCreateRequestModel);
-    public void Update(string id, MerchantCreateRequestModel request);
+    public long Update(string id, MerchantUpdateRequestModel request);
     public List<Merchant> GetAll();
     public void Delete(string id);
-    public void UpdateName(string id, string requestName);
+    public long UpdateName(string id, string requestName);
 }

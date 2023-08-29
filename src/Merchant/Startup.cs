@@ -53,7 +53,7 @@ public class Startup
         services.AddResponseCompression(); // Adding compression service for responses.
         // Adding a concrete Service class corresponding to the IService interface.
         services.AddSingleton<IService, Service>();
-        services.AddControllers()
+        services.AddControllers() // Todo bunabakk
             .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
         // Adding a concrete Repository class corresponding to the IRepository interface.
         services.AddSingleton<IRepository, Repository>(_ => // bu neden "_" ????????
@@ -61,8 +61,9 @@ public class Startup
             var client = new MongoClient(MongoDbSettings.ConnectionString);
             var database = client.GetDatabase(MongoDbSettings.DBName);
             var collection = database.GetCollection<Merchant>(MongoDbSettings.CollectionName);
+            var logger = _.GetService<ILogger<Repository>>();
 
-            return new Repository(collection);
+            return new Repository(collection, logger);
         });
     }
 
