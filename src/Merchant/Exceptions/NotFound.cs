@@ -8,3 +8,10 @@ public class NotFound : ErrorDetail
         Message = message;
     }
 }
+
+public class MerchantNotFound : NotFound
+{
+    public MerchantNotFound(string message) : base(message)
+    {
+    }
+}

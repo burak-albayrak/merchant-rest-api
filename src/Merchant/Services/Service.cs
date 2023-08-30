@@ -95,7 +95,8 @@ public class Service : IService
     public PaginatedList<Merchant> GetPaginated(int page, int pageSize)
     {
         var allMerchants = _repository.GetAll();
-
+        _logger.LogInformation("Retrieved {MerchantCount} merchants", allMerchants.Count);
+        
         return PaginatedList<Merchant>.Create(allMerchants, page, pageSize);
     }
 

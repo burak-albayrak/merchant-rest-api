@@ -28,7 +28,7 @@ public class MerchantController : ControllerBase
         if (merchant == null)
         {
             _logger.LogWarning("Merchant with id {MerchantId} not found!", id);
-            return NotFound("Merchant not found!");
+            throw new MerchantNotFound("Merchant Not Found!");
         }
 
         _logger.LogInformation("Merchant found: {MerchantName}", merchant.Name);
@@ -43,7 +43,7 @@ public class MerchantController : ControllerBase
         if (allMerchants == null || allMerchants.Count == 0)
         {
             _logger.LogWarning("No merchants found!");
-            return NotFound("No merchants found!");
+            throw new MerchantNotFound("Merchant Not Found!");
         }
 
         _logger.LogInformation("Retrieved {MerchantCount} merchants", allMerchants.Count);
@@ -58,7 +58,7 @@ public class MerchantController : ControllerBase
         if (paginatedMerchants == null || paginatedMerchants.Items.Count == 0)
         {
             _logger.LogWarning("No merchants found on page {PageNumber}!", page);
-            return NotFound("No merchants found!");
+            throw new MerchantNotFound("Merchant Not Found!");
         }
 
         _logger.LogInformation("Retrieved {MerchantCount} merchants on page {PageNumber}",
@@ -87,7 +87,7 @@ public class MerchantController : ControllerBase
         if (count == 0)
         {
             _logger.LogWarning("Merchant with id {MerchantId} not found!", id);
-            return NotFound("Merchant: " + id + " not found!");
+            throw new MerchantNotFound("Merchant: " + id + " not found!");
         }
 
         _logger.LogInformation("Merchant updated successfully");
@@ -101,7 +101,7 @@ public class MerchantController : ControllerBase
         if (existingMerchant == null)
         {
             _logger.LogWarning("Merchant with id {MerchantId} not found!", id);
-            return NotFound("Merchant: " + id + " not found!");
+            throw new MerchantNotFound("Merchant: " + id + " not found!");
         }
 
         _service.UpdateName(id, newName);
@@ -117,7 +117,7 @@ public class MerchantController : ControllerBase
         if (existingMerchant == null)
         {
             _logger.LogWarning("Merchant with id {MerchantId} not found!", id);
-            return NotFound("Merchant: " + id + " not found!");
+            throw new MerchantNotFound("Merchant: " + id + " not found!");
         }
 
         _service.Delete(id);
@@ -134,7 +134,7 @@ public class MerchantController : ControllerBase
         if (filteredMerchants == null || filteredMerchants.Count == 0)
         {
             _logger.LogWarning("No merchants found with the given name filter!");
-            return NotFound("No merchants found!");
+            throw new MerchantNotFound("No merchants found!");
         }
 
         _logger.LogInformation("Retrieved {MerchantCount} filtered merchants by name", filteredMerchants.Count);
