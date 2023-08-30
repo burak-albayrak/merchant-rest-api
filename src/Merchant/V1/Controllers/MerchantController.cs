@@ -36,9 +36,9 @@ public class MerchantController : ControllerBase
     }
 
     [HttpGet("All")]
-    public IActionResult GetAll()
+    public IActionResult GetAll([FromQuery] PaginationRequestModel request)
     {
-        var allMerchants = _service.GetAll();
+        var allMerchants = _service.GetAll(request.Page, request.PageSize);
 
         if (allMerchants == null || allMerchants.Count == 0)
         {
@@ -46,30 +46,18 @@ public class MerchantController : ControllerBase
             throw new MerchantNotFound("Merchant Not Found!");
         }
 
+        var returnedMerchants = new MerchantResponseModel().NewModel(allMerchants);
+
         _logger.LogInformation("Retrieved {MerchantCount} merchants", allMerchants.Count);
-        return Ok(allMerchants);
-    }
-
-    [HttpGet("Pagination")]
-    public IActionResult GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
-    {
-        var paginatedMerchants = _service.GetPaginated(page, pageSize);
-
-        if (paginatedMerchants == null || paginatedMerchants.Items.Count == 0)
+        var response = new
         {
-            _logger.LogWarning("No merchants found on page {PageNumber}!", page);
-            throw new MerchantNotFound("Merchant Not Found!");
-        }
-
-        _logger.LogInformation("Retrieved {MerchantCount} merchants on page {PageNumber}",
-            paginatedMerchants.Items.Count, page);
-
-        HttpContext.Response.Headers.Add("TotalItemCount", paginatedMerchants.TotalItemCount.ToString());
-        HttpContext.Response.Headers.Add("TotalPageCount", paginatedMerchants.TotalPageCount.ToString());
-
-        return Ok(paginatedMerchants.Items);
+            merchants = returnedMerchants,
+            page = request.Page,
+            pageSize = request.PageSize
+        };
+        
+        return Ok(response);
     }
-
 
     [HttpPost]
     public IActionResult Post([FromBody] MerchantCreateRequestModel request)
@@ -126,7 +114,7 @@ public class MerchantController : ControllerBase
         return Ok(new DefaultResponseModel("Merchant with ID: " + id).ToString());
     }
 
-    [HttpGet("filteredByName")]
+    /*[HttpGet("filteredByName")]
     public IActionResult GetFilteredByName([FromQuery] MerchantNameFilterModel filters)
     {
         var filteredMerchants = _service.GetFilteredByName(filters);
@@ -140,5 +128,5 @@ public class MerchantController : ControllerBase
         _logger.LogInformation("Retrieved {MerchantCount} filtered merchants by name", filteredMerchants.Count);
 
         return Ok(filteredMerchants);
-    }
+    }*/
 }

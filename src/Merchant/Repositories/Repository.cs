@@ -31,9 +31,9 @@ public class Repository : IRepository //Database(data access layer) (database il
         return merchant;
     }
 
-    public List<Merchant> GetAll()
+    public List<Merchant> GetAll(int page, int pageSize)
     {
-        var allMerchants = _collection.Find(Builders<Merchant>.Filter.Empty).ToList();
+        var allMerchants = _collection.Find(Builders<Merchant>.Filter.Empty).Limit(pageSize).Skip((page - 1) * pageSize).ToList();
         _logger.LogInformation("Retrieved {MerchantCount} merchants", allMerchants.Count);
 
         return allMerchants;

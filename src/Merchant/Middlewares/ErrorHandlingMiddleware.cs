@@ -1,3 +1,4 @@
+using System.Net;
 using System.Reflection.Metadata;
 using Merchant.Exceptions;
 
@@ -27,7 +28,8 @@ public class ErrorHandlingMiddleware
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "[500] - {ErrorMessage}", e.Message);
+            _logger.LogError(e, "{ErrorMessage}", e.Message);
+            await HandleException(httpContext, e);
         }
     }
 
@@ -39,6 +41,16 @@ public class ErrorHandlingMiddleware
         {
             StatusCode = errorDetail.StatusCode,
             Message = errorDetail.Message
+        }.ToString());
+    }
+    public async Task HandleException(HttpContext httpContext, Exception exception)
+    {
+        httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+        httpContext.Response.ContentType = "application/json";
+        await httpContext.Response.WriteAsync(new ErrorDetail()
+        {
+            StatusCode = (int)HttpStatusCode.InternalServerError,
+            Message = exception.Message
         }.ToString());
     }
 }

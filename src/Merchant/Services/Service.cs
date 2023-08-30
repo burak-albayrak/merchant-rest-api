@@ -1,7 +1,6 @@
 using Merchant.Exceptions;
 using Merchant.Repositories;
 using Merchant.V1.Models.RequestModels;
-using Merchant.V1.Helpers;
 
 namespace Merchant.Services;
 
@@ -33,9 +32,9 @@ public class Service : IService
         return merchant;
     }
 
-    public List<Merchant> GetAll()
+    public List<Merchant> GetAll(int page, int pageSize)
     {
-        var allMerchants = _repository.GetAll();
+        var allMerchants = _repository.GetAll(page, pageSize);
         _logger.LogInformation("Retrieved {MerchantCount} merchants", allMerchants.Count);
 
         return allMerchants;
@@ -52,7 +51,7 @@ public class Service : IService
         var existingMerchant = _repository.Get(id);
         if (existingMerchant == null)
         {
-            throw new NotFound("Merchant not found");
+            throw new MerchantNotFound("Merchant not found");
         }
 
         existingMerchant.Name = request.Name;
@@ -69,7 +68,7 @@ public class Service : IService
         var existingMerchant = _repository.Get(id);
         if (existingMerchant == null)
         {
-            throw new NotFound("Merchant not found");
+            throw new MerchantNotFound("Merchant Not Found!");
         }
 
         existingMerchant.Name = newName;
@@ -85,22 +84,15 @@ public class Service : IService
         var existingMerchant = _repository.Get(id);
         if (existingMerchant == null)
         {
-            throw new NotFound("Merchant not found");
+            throw new MerchantNotFound("Merchant Not Found!");
         }
 
         _repository.Delete(existingMerchant);
         _logger.LogInformation("Merchant deleted successfully: {MerchantId}", id);
     }
+    
 
-    public PaginatedList<Merchant> GetPaginated(int page, int pageSize)
-    {
-        var allMerchants = _repository.GetAll();
-        _logger.LogInformation("Retrieved {MerchantCount} merchants", allMerchants.Count);
-        
-        return PaginatedList<Merchant>.Create(allMerchants, page, pageSize);
-    }
-
-    public List<Merchant> GetFilteredByName(MerchantNameFilterModel filters)
+    /*public List<Merchant> GetFilteredByName(MerchantNameFilterModel filters)
     {
         var allMerchants = _repository.GetAll();
 
@@ -110,5 +102,5 @@ public class Service : IService
         }
 
         return allMerchants;
-    }
+    } */
 }
