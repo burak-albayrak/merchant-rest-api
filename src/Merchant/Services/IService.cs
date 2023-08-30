@@ -12,4 +12,5 @@ public interface IService
     public void Delete(string id);
     public long UpdateName(string id, string requestName);
     PaginatedList<Merchant> GetPaginated(int page, int pageSize);
+    List<Merchant> GetFilteredByName(MerchantNameFilterModel filters);
 }

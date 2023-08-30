@@ -27,7 +27,7 @@ public class Repository : IRepository //Database(data access layer) (database il
         {
             _logger.LogInformation("Merchant found: {MerchantName}", merchant.Name);
         }
-        
+
         return merchant;
     }
 
@@ -52,10 +52,10 @@ public class Repository : IRepository //Database(data access layer) (database il
         var update = Builders<Merchant>.Update
             .Set(m => m.Name, existingMerchant.Name)
             .Set(m => m.Address, existingMerchant.Address);
-        
+
         var updateInfo = _collection.UpdateOne(filter, update);
         _logger.LogInformation("Merchant updated successfully");
-        
+
         return updateInfo.MatchedCount;
     }
 

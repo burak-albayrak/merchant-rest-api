@@ -50,7 +50,7 @@ public class MerchantController : ControllerBase
         return Ok(allMerchants);
     }
 
-    [HttpGet]
+    [HttpGet("Pagination")]
     public IActionResult GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         var paginatedMerchants = _service.GetPaginated(page, pageSize);
@@ -124,5 +124,21 @@ public class MerchantController : ControllerBase
 
         _logger.LogInformation("Merchant deleted successfully: {MerchantId}", id);
         return Ok(new DefaultResponseModel("Merchant with ID: " + id).ToString());
+    }
+
+    [HttpGet("filteredByName")]
+    public IActionResult GetFilteredByName([FromQuery] MerchantNameFilterModel filters)
+    {
+        var filteredMerchants = _service.GetFilteredByName(filters);
+
+        if (filteredMerchants == null || filteredMerchants.Count == 0)
+        {
+            _logger.LogWarning("No merchants found with the given name filter!");
+            return NotFound("No merchants found!");
+        }
+
+        _logger.LogInformation("Retrieved {MerchantCount} filtered merchants by name", filteredMerchants.Count);
+
+        return Ok(filteredMerchants);
     }
 }

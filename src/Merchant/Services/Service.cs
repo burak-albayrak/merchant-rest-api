@@ -98,4 +98,16 @@ public class Service : IService
 
         return PaginatedList<Merchant>.Create(allMerchants, page, pageSize);
     }
+
+    public List<Merchant> GetFilteredByName(MerchantNameFilterModel filters)
+    {
+        var allMerchants = _repository.GetAll();
+
+        if (!string.IsNullOrEmpty(filters.Name))
+        {
+            allMerchants = allMerchants.Where(m => m.Name.Contains(filters.Name)).ToList();
+        }
+
+        return allMerchants;
+    }
 }
