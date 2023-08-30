@@ -1,6 +1,7 @@
 using Merchant.Exceptions;
 using Merchant.Repositories;
 using Merchant.V1.Models.RequestModels;
+using Merchant.V1.Helpers;
 
 namespace Merchant.Services;
 
@@ -75,7 +76,7 @@ public class Service : IService
 
         var count = _repository.Update(existingMerchant);
         _logger.LogInformation("Merchant name updated: {MerchantId}, New Name: {NewName}", id, newName);
-        
+
         return count;
     }
 
@@ -89,5 +90,12 @@ public class Service : IService
 
         _repository.Delete(existingMerchant);
         _logger.LogInformation("Merchant deleted successfully: {MerchantId}", id);
+    }
+
+    public PaginatedList<Merchant> GetPaginated(int page, int pageSize)
+    {
+        var allMerchants = _repository.GetAll();
+
+        return PaginatedList<Merchant>.Create(allMerchants, page, pageSize);
     }
 }

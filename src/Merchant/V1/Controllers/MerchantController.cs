@@ -50,6 +50,27 @@ public class MerchantController : ControllerBase
         return Ok(allMerchants);
     }
 
+    [HttpGet]
+    public IActionResult GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        var paginatedMerchants = _service.GetPaginated(page, pageSize);
+
+        if (paginatedMerchants == null || paginatedMerchants.Items.Count == 0)
+        {
+            _logger.LogWarning("No merchants found on page {PageNumber}!", page);
+            return NotFound("No merchants found!");
+        }
+
+        _logger.LogInformation("Retrieved {MerchantCount} merchants on page {PageNumber}",
+            paginatedMerchants.Items.Count, page);
+
+        HttpContext.Response.Headers.Add("TotalItemCount", paginatedMerchants.TotalItemCount.ToString());
+        HttpContext.Response.Headers.Add("TotalPageCount", paginatedMerchants.TotalPageCount.ToString());
+
+        return Ok(paginatedMerchants.Items);
+    }
+
+
     [HttpPost]
     public IActionResult Post([FromBody] MerchantCreateRequestModel request)
     {
@@ -62,14 +83,13 @@ public class MerchantController : ControllerBase
     [HttpPut("{id}")]
     public IActionResult Put(string id, [FromBody] MerchantUpdateRequestModel request)
     {
-
         var count = _service.Update(id, request);
         if (count == 0)
         {
             _logger.LogWarning("Merchant with id {MerchantId} not found!", id);
             return NotFound("Merchant: " + id + " not found!");
         }
-            
+
         _logger.LogInformation("Merchant updated successfully");
         return Ok(new DefaultResponseModel("Merchant with ID: " + id).ToString());
     }
@@ -77,7 +97,6 @@ public class MerchantController : ControllerBase
     [HttpPatch("{id}")]
     public IActionResult PatchName(string id, [FromQuery] string newName)
     {
-
         var existingMerchant = _service.Get(id);
         if (existingMerchant == null)
         {
@@ -94,7 +113,6 @@ public class MerchantController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult Delete(string id)
     {
-
         var existingMerchant = _service.Get(id);
         if (existingMerchant == null)
         {
