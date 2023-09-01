@@ -36,9 +36,9 @@ public class MerchantController : ControllerBase
     }
 
     [HttpGet("All")]
-    public IActionResult GetAll([FromQuery] PaginationRequestModel request, [FromQuery] MerchantFilterModel filter)
+    public IActionResult GetAll([FromQuery] PaginationRequestModel request, [FromQuery] MerchantFilterModel filter, [FromQuery] MerchantSortingModel sorting)
     {
-        var allMerchants = _service.GetAll(request.Page, request.PageSize, filter);
+        var allMerchants = _service.GetAll(request.Page, request.PageSize, filter, sorting);
 
         if (allMerchants == null || allMerchants.Count == 0)
         {

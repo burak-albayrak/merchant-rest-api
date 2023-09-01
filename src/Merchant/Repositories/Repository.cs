@@ -31,7 +31,7 @@ public class Repository : IRepository //Database(data access layer) (database il
         return merchant;
     }
 
-    public List<Merchant> GetAll(int page, int pageSize, MerchantFilterModel filter)
+    public List<Merchant> GetAll(int page, int pageSize, MerchantFilterModel filter, MerchantSortingModel sorting)
     {
         var filterDefinition = Builders<Merchant>.Filter.Empty;
 
@@ -39,8 +39,11 @@ public class Repository : IRepository //Database(data access layer) (database il
         {
             filterDefinition &= Builders<Merchant>.Filter.Eq("address.city", filter.City);
         }
-
+        var sortDirection = sorting.SortDirection.ToLower() == "desc" ? -1 : 1;
+        var sortField = sorting.SortField;
+        
         var allMerchants = _collection.Find(filterDefinition)
+            .Sort(Builders<Merchant>.Sort.Ascending(sortField))
             .Limit(pageSize)
             .Skip((page - 1) * pageSize) // todo offset ile yap!
             .ToList();

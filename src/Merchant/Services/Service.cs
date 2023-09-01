@@ -32,9 +32,9 @@ public class Service : IService
         return merchant;
     }
 
-    public List<Merchant> GetAll(int page, int pageSize, MerchantFilterModel filter)
+    public List<Merchant> GetAll(int page, int pageSize, MerchantFilterModel filter, MerchantSortingModel sorting)
     {
-        var allMerchants = _repository.GetAll(page, pageSize, filter);
+        var allMerchants = _repository.GetAll(page, pageSize, filter, sorting);
         _logger.LogInformation("Retrieved {MerchantCount} merchants", allMerchants.Count);
 
         return allMerchants;
