@@ -3,17 +3,6 @@ namespace Merchant.V1.Models.ResponseModels;
 // Represents the response model for a merchant entity
 public class MerchantResponseModel
 {
-    public MerchantResponseModel(string name, Address address)
-    {
-        Name = name;
-        Address = address;
-    }
-
-    // Default constructor
-    public MerchantResponseModel()
-    {
-    }
-
     public string Name { get; set; }
     public Address Address { get; set; }
 

@@ -36,14 +36,14 @@ public class MerchantController : ControllerBase
     }
 
     [HttpGet("All")]
-    public IActionResult GetAll([FromQuery] PaginationRequestModel request)
+    public IActionResult GetAll([FromQuery] PaginationRequestModel request, [FromQuery] MerchantFilterModel filter)
     {
-        var allMerchants = _service.GetAll(request.Page, request.PageSize);
+        var allMerchants = _service.GetAll(request.Page, request.PageSize, filter);
 
         if (allMerchants == null || allMerchants.Count == 0)
         {
             _logger.LogWarning("No merchants found!");
-            throw new MerchantNotFound("Merchant Not Found!");
+            throw new MerchantNotFound("No merchants found!");
         }
 
         var returnedMerchants = new MerchantResponseModel().NewModel(allMerchants);
@@ -55,7 +55,7 @@ public class MerchantController : ControllerBase
             page = request.Page,
             pageSize = request.PageSize
         };
-        
+
         return Ok(response);
     }
 
@@ -113,20 +113,4 @@ public class MerchantController : ControllerBase
         _logger.LogInformation("Merchant deleted successfully: {MerchantId}", id);
         return Ok(new DefaultResponseModel("Merchant with ID: " + id).ToString());
     }
-
-    /*[HttpGet("filteredByName")]
-    public IActionResult GetFilteredByName([FromQuery] MerchantNameFilterModel filters)
-    {
-        var filteredMerchants = _service.GetFilteredByName(filters);
-
-        if (filteredMerchants == null || filteredMerchants.Count == 0)
-        {
-            _logger.LogWarning("No merchants found with the given name filter!");
-            throw new MerchantNotFound("No merchants found!");
-        }
-
-        _logger.LogInformation("Retrieved {MerchantCount} filtered merchants by name", filteredMerchants.Count);
-
-        return Ok(filteredMerchants);
-    }*/
 }

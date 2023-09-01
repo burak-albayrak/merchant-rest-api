@@ -31,14 +31,25 @@ public class Repository : IRepository //Database(data access layer) (database il
         return merchant;
     }
 
-    public List<Merchant> GetAll(int page, int pageSize)
+    public List<Merchant> GetAll(int page, int pageSize, MerchantFilterModel filter)
     {
-        var allMerchants = _collection.Find(Builders<Merchant>.Filter.Empty).Limit(pageSize).Skip((page - 1) * pageSize).ToList();
+        var filterDefinition = Builders<Merchant>.Filter.Empty;
+
+        if (!string.IsNullOrEmpty(filter.City))
+        {
+            filterDefinition &= Builders<Merchant>.Filter.Eq("address.city", filter.City);
+        }
+
+        var allMerchants = _collection.Find(filterDefinition)
+            .Limit(pageSize)
+            .Skip((page - 1) * pageSize) // todo offset ile yap!
+            .ToList();
+
         _logger.LogInformation("Retrieved {MerchantCount} merchants", allMerchants.Count);
 
         return allMerchants;
     }
-
+    
     public void Post(MerchantCreateRequestModel request)
     {
         var merchant = new Merchant(request.Name, request.Address);

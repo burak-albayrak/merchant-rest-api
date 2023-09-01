@@ -7,8 +7,7 @@ public interface IService
     public Merchant Get(string id);
     public void Post(MerchantCreateRequestModel merchantCreateRequestModel);
     public long Update(string id, MerchantUpdateRequestModel request);
-    public List<Merchant> GetAll(int page, int pageSize);
+    public List<Merchant> GetAll(int page, int pageSize, MerchantFilterModel filter);
     public void Delete(string id);
     public long UpdateName(string id, string requestName);
-    // List<Merchant> GetFilteredByName(MerchantNameFilterModel filters);
 }

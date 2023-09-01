@@ -32,9 +32,9 @@ public class Service : IService
         return merchant;
     }
 
-    public List<Merchant> GetAll(int page, int pageSize)
+    public List<Merchant> GetAll(int page, int pageSize, MerchantFilterModel filter)
     {
-        var allMerchants = _repository.GetAll(page, pageSize);
+        var allMerchants = _repository.GetAll(page, pageSize, filter);
         _logger.LogInformation("Retrieved {MerchantCount} merchants", allMerchants.Count);
 
         return allMerchants;
@@ -90,17 +90,4 @@ public class Service : IService
         _repository.Delete(existingMerchant);
         _logger.LogInformation("Merchant deleted successfully: {MerchantId}", id);
     }
-    
-
-    /*public List<Merchant> GetFilteredByName(MerchantNameFilterModel filters)
-    {
-        var allMerchants = _repository.GetAll();
-
-        if (!string.IsNullOrEmpty(filters.Name))
-        {
-            allMerchants = allMerchants.Where(m => m.Name.Contains(filters.Name)).ToList();
-        }
-
-        return allMerchants;
-    } */
 }
