@@ -29,10 +29,9 @@ public class MerchantController : ControllerBase
     /// <remarks>
     ///     sample **response**:
     ///
-    ///         GET /Merchant
-    ///         {
-    ///             "id": 0
-    ///         }
+    ///         curl -X 'GET' \
+    ///             'http://localhost:5188/Merchant/123123' \
+    ///             -H 'accept: text/plain'
     /// </remarks>
     /// <response code="200">Returns specific Merchant in the system.</response>
     /// <response code="400">Bad Request Error!!</response>
@@ -58,16 +57,9 @@ public class MerchantController : ControllerBase
     /// <remarks>
     ///     sample **response**:
     ///
-    ///         GET /Merchant/All
-    ///         {
-    ///             "name": "string",
-    ///             "reviewStar": 0,
-    ///             "reviewCount": 0,
-    ///             "address": {
-    ///                 "city": "string",
-    ///                 "cityCode": 0
-    ///             }
-    ///         }
+    ///         curl -X 'GET' \
+    ///             'http://localhost:5188/Merchant/All?Page=1&amp;PageSize=17&amp;City=Ankara&amp;SortBy=name&amp;SortOrder=asc' \
+    ///             -H 'accept: text/plain'
     /// </remarks>
     /// <response code="200">Returns all Merchants in the system.</response>
     /// <response code="400">Bad Request Error!!</response>
@@ -120,16 +112,19 @@ public class MerchantController : ControllerBase
     /// <remarks>
     ///     sample **request**:
     ///
-    ///         POST /Merchant
-    ///         {
+    ///         curl -X 'POST' \
+    ///             'http://localhost:5188/Merchant' \
+    ///             -H 'accept: text/plain' \
+    ///             -H 'Content-Type: application/json' \
+    ///             -d '{
     ///             "name": "string",
-    ///             "reviewStar": 0,
-    ///             "reviewCount": 0,
     ///             "address": {
     ///                 "city": "string",
     ///                 "cityCode": 0
-    ///             }
-    ///         }
+    ///             },
+    ///             "reviewStar": 0,
+    ///             "reviewCount": 0
+    ///         }'
     /// </remarks>
     /// <response code="200">Adds a new Merchant to the database.</response>
     /// <response code="400">Bad Request Error!!</response>
@@ -150,18 +145,19 @@ public class MerchantController : ControllerBase
     /// <remarks>
     ///     sample **request**:
     ///
-    ///         PUT /Merchant
-    ///         {
-    ///             "id": 0,
-    /// 
+    ///         curl -X 'PUT' \
+    ///             'http://localhost:5188/Merchant/5ecd844f-4677-46a8-86a4-99e2e2f02000' \
+    ///             -H 'accept: text/plain' \
+    ///             -H 'Content-Type: application/json' \
+    ///             -d '{
     ///             "name": "string",
-    ///             "reviewStar": 0,
-    ///             "reviewCount": 0,
     ///             "address": {
     ///                 "city": "string",
     ///                 "cityCode": 0
-    ///             }
-    ///         }
+    ///             },
+    ///             "reviewStar": 0,
+    ///             "reviewCount": 0
+    ///         }'
     /// </remarks>
     /// <response code="200">Updates the specific Merchant with ID.</response>
     /// <response code="400">Bad Request Error!!</response>
@@ -187,11 +183,9 @@ public class MerchantController : ControllerBase
     /// <remarks>
     ///     sample **request**:
     ///
-    ///         PATCH /Merchant
-    ///         {
-    ///             "id": 0,
-    ///             "newName": "string",
-    ///         }
+    ///         curl -X 'PATCH' \
+    ///             'http://localhost:5188/Merchant/5ecd844f-4677-46a8-86a4-99e2e2f02000?newName=Xiaomi' \
+    ///             -H 'accept: text/plain'
     /// </remarks>
     /// <response code="200">Updates the specific Merchant's name with ID.</response>
     /// <response code="400">Bad Request Error!!</response>
@@ -219,10 +213,9 @@ public class MerchantController : ControllerBase
     /// <remarks>
     ///     sample **request**:
     ///
-    ///         DELETE /Merchant
-    ///         {
-    ///             "id": 0
-    ///         }
+    ///         curl -X 'DELETE' \
+    ///             'http://localhost:5188/Merchant/5ecd844f-4677-46a8-86a4-99e2e2f02000' \
+    ///             -H 'accept: text/plain'
     /// </remarks>
     /// <response code="200">Deletes the specific Merchant with ID.</response>
     /// <response code="400">Bad Request Error!!</response>
