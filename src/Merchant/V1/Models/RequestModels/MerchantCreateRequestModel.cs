@@ -9,4 +9,8 @@ public class MerchantCreateRequestModel
     
     [JsonPropertyName("address")]
     public Address Address { get; set; }
+    [JsonPropertyName("reviewStar")]
+    public double ReviewStar { get; set; }
+    [JsonPropertyName("reviewCount")]
+    public int ReviewCount { get; set; }
 }

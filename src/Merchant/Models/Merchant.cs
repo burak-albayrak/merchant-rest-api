@@ -17,7 +17,7 @@ public class Merchant
     [BsonElement("reviewCount")]
     public int ReviewCount { get; set; }
 
-    public Merchant(string name, Address address)
+    public Merchant(string name, Address address, double reviewStar, int reviewCount)
     {
         Id = Guid.NewGuid().ToString();
         Name = name;

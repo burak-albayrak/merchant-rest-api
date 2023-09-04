@@ -3,9 +3,9 @@ using Merchant.V1.Models.RequestModels;
 
 namespace Merchant.V1;
 
-public class SortingValidator : AbstractValidator<SortModel>
+public class SortValidator : AbstractValidator<SortModel>
 {
-    public SortingValidator()
+    public SortValidator()
     {
         RuleFor(sortModel => sortModel.SortBy)
             .NotEmpty().WithMessage("SortBy field is required.")

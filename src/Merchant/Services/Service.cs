@@ -22,12 +22,12 @@ public class Service : IService
 
         if (merchant == null)
         {
-            _logger.LogWarning("Merchant with id {MerchantId} not found!", id);
+            _logger.LogError("Merchant with id {MerchantId} not found!", id);
+            throw new NotFound("Merchant Not Found!");
         }
-        else
-        {
-            _logger.LogInformation("Merchant found: {MerchantName}", merchant.Name);
-        }
+
+        _logger.LogInformation("Merchant found: {MerchantName}", merchant.Name);
+
 
         return merchant;
     }
@@ -51,11 +51,14 @@ public class Service : IService
         var existingMerchant = await _repository.Get(id);
         if (existingMerchant == null)
         {
+            _logger.LogError("Merchant with id {MerchantId} not found!", id);
             throw new MerchantNotFound("Merchant not found");
         }
 
         existingMerchant.Name = request.Name;
         existingMerchant.Address = request.Address;
+        existingMerchant.ReviewStar = request.ReviewStar;
+        existingMerchant.ReviewCount = request.ReviewCount;
 
         var count = await _repository.Update(existingMerchant);
         _logger.LogInformation("Merchant updated successfully");
@@ -68,6 +71,7 @@ public class Service : IService
         var existingMerchant = await _repository.Get(id);
         if (existingMerchant == null)
         {
+            _logger.LogError("Merchant with id {MerchantId} not found!", id);
             throw new MerchantNotFound("Merchant Not Found!");
         }
 
@@ -84,6 +88,7 @@ public class Service : IService
         var existingMerchant = await _repository.Get(id);
         if (existingMerchant == null)
         {
+            _logger.LogError("Merchant with id {MerchantId} not found!", id);
             throw new MerchantNotFound("Merchant Not Found!");
         }
 

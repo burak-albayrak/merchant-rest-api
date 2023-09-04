@@ -1,3 +1,4 @@
+using Merchant.Exceptions;
 using Merchant.Services;
 using Merchant.V1.Models.RequestModels;
 using MongoDB.Driver;
@@ -21,12 +22,11 @@ public class Repository : IRepository //Database(data access layer) (database il
 
         if (merchant == null)
         {
-            _logger.LogWarning("Merchant with id {MerchantId} not found!", id);
+            _logger.LogError("Merchant with id {MerchantId} not found!", id);
+            throw new NotFound("Merchant not found!");
         }
-        else
-        {
-            _logger.LogInformation("Merchant found: {MerchantName}", merchant.Name);
-        }
+
+        _logger.LogInformation("Merchant found: {MerchantName}", merchant.Name);
 
         return merchant;
     }
@@ -65,7 +65,7 @@ public class Repository : IRepository //Database(data access layer) (database il
 
     public async Task Post(MerchantCreateRequestModel request)
     {
-        var merchant = new Merchant(request.Name, request.Address);
+        var merchant = new Merchant(request.Name, request.Address, request.ReviewStar, request.ReviewCount);
         await _collection.InsertOneAsync(merchant);
         _logger.LogInformation("Merchant created successfully");
     }
@@ -75,7 +75,9 @@ public class Repository : IRepository //Database(data access layer) (database il
         var filter = Builders<Merchant>.Filter.Eq(m => m.Id, existingMerchant.Id);
         var update = Builders<Merchant>.Update
             .Set(m => m.Name, existingMerchant.Name)
-            .Set(m => m.Address, existingMerchant.Address);
+            .Set(m => m.Address, existingMerchant.Address)
+            .Set(m => m.ReviewStar, existingMerchant.ReviewStar)
+            .Set(m => m.ReviewCount, existingMerchant.ReviewCount);
 
         var updateInfo = await _collection.UpdateOneAsync(filter, update);
         _logger.LogInformation("Merchant updated successfully");

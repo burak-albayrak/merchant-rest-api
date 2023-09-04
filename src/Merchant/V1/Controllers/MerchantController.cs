@@ -23,13 +23,28 @@ public class MerchantController : ControllerBase
         _service = service;
     }
 
+    /// <summary>
+    /// Returns specific Merchant in the database with ID.
+    /// </summary>
+    /// <remarks>
+    ///     sample **response**:
+    ///
+    ///         GET /Merchant
+    ///         {
+    ///             "id": 0
+    ///         }
+    /// </remarks>
+    /// <response code="200">Returns specific Merchant in the system.</response>
+    /// <response code="400">Bad Request Error!!</response>
     [HttpGet("{id}")]
+    [ProducesResponseType(typeof(MerchantResponseModel[]), 200)]
+    [ProducesResponseType(typeof(ErrorResponseModel), 400)]
     public async Task<IActionResult> Get([FromRoute] string id)
     {
         var merchant = await _service.Get(id);
         if (merchant == null)
         {
-            _logger.LogWarning("Merchant with id {MerchantId} not found!", id);
+            _logger.LogError("Merchant with id {MerchantId} not found!", id);
             throw new MerchantNotFound("Merchant Not Found!");
         }
 
@@ -38,10 +53,10 @@ public class MerchantController : ControllerBase
     }
     
     /// <summary>
-    /// Returns all the Merchants in the database
+    /// Returns all Merchants in the database.
     /// </summary>
     /// <remarks>
-    ///     sample **request**:
+    ///     sample **response**:
     ///
     ///         GET /Merchant/All
     ///         {
@@ -54,8 +69,8 @@ public class MerchantController : ControllerBase
     ///             }
     ///         }
     /// </remarks>
-    /// <response code="200">Returns all the Merchants in the system</response>
-    /// <response code="400">Bad Request Error!</response>
+    /// <response code="200">Returns all Merchants in the system.</response>
+    /// <response code="400">Bad Request Error!!</response>
     [HttpGet("All")]
     [ProducesResponseType(typeof(MerchantResponseModel[]), 200)]
     [ProducesResponseType(typeof(ErrorResponseModel), 400)]
@@ -64,7 +79,7 @@ public class MerchantController : ControllerBase
         [FromQuery] FilterModel filter,
         [FromQuery] SortModel sort)
     {
-        var sortValidator = new SortingValidator();
+        var sortValidator = new SortValidator();
         var result = sortValidator.Validate(sort);
 
         if (!result.IsValid)
@@ -82,7 +97,7 @@ public class MerchantController : ControllerBase
 
         if (allMerchants == null || allMerchants.Count == 0)
         {
-            _logger.LogWarning("No merchants found!");
+            _logger.LogError("No merchants found!");
             throw new MerchantNotFound("No merchants found!");
         }
 
@@ -99,8 +114,28 @@ public class MerchantController : ControllerBase
         return Ok(response);
     }
 
-
+    /// <summary>
+    /// Adds a new Merchant to the database.
+    /// </summary>
+    /// <remarks>
+    ///     sample **request**:
+    ///
+    ///         POST /Merchant
+    ///         {
+    ///             "name": "string",
+    ///             "reviewStar": 0,
+    ///             "reviewCount": 0,
+    ///             "address": {
+    ///                 "city": "string",
+    ///                 "cityCode": 0
+    ///             }
+    ///         }
+    /// </remarks>
+    /// <response code="200">Adds a new Merchant to the database.</response>
+    /// <response code="400">Bad Request Error!!</response>
     [HttpPost]
+    [ProducesResponseType(typeof(MerchantCreateRequestModel[]), 200)]
+    [ProducesResponseType(typeof(ErrorResponseModel), 400)]
     public async Task<IActionResult> Post([FromBody] MerchantCreateRequestModel request)
     {
         await _service.Post(request);
@@ -109,13 +144,36 @@ public class MerchantController : ControllerBase
         return Created("Created", null);
     }
 
+    /// <summary>
+    /// Updates the specific Merchant with ID.
+    /// </summary>
+    /// <remarks>
+    ///     sample **request**:
+    ///
+    ///         PUT /Merchant
+    ///         {
+    ///             "id": 0,
+    /// 
+    ///             "name": "string",
+    ///             "reviewStar": 0,
+    ///             "reviewCount": 0,
+    ///             "address": {
+    ///                 "city": "string",
+    ///                 "cityCode": 0
+    ///             }
+    ///         }
+    /// </remarks>
+    /// <response code="200">Updates the specific Merchant with ID.</response>
+    /// <response code="400">Bad Request Error!!</response>
     [HttpPut("{id}")]
+    [ProducesResponseType(typeof(MerchantCreateRequestModel[]), 200)]
+    [ProducesResponseType(typeof(ErrorResponseModel), 400)]
     public async Task<IActionResult> Put(string id, [FromBody] MerchantUpdateRequestModel request)
     {
         var count = await _service.Update(id, request);
         if (count == 0)
         {
-            _logger.LogWarning("Merchant with id {MerchantId} not found!", id);
+            _logger.LogError("Merchant with id {MerchantId} not found!", id);
             throw new MerchantNotFound("Merchant: " + id + " not found!");
         }
 
@@ -123,13 +181,29 @@ public class MerchantController : ControllerBase
         return Ok(new DefaultResponseModel("Merchant with ID: " + id).ToString());
     }
 
+    /// <summary>
+    /// Updates the specific Merchant's name with ID.
+    /// </summary>
+    /// <remarks>
+    ///     sample **request**:
+    ///
+    ///         PATCH /Merchant
+    ///         {
+    ///             "id": 0,
+    ///             "newName": "string",
+    ///         }
+    /// </remarks>
+    /// <response code="200">Updates the specific Merchant's name with ID.</response>
+    /// <response code="400">Bad Request Error!!</response>
     [HttpPatch("{id}")]
+    [ProducesResponseType(typeof(MerchantCreateRequestModel[]), 200)]
+    [ProducesResponseType(typeof(ErrorResponseModel), 400)]
     public async Task<IActionResult> PatchName(string id, [FromQuery] string newName)
     {
         var existingMerchant = await _service.Get(id);
         if (existingMerchant == null)
         {
-            _logger.LogWarning("Merchant with id {MerchantId} not found!", id);
+            _logger.LogError("Merchant with id {MerchantId} not found!", id);
             throw new MerchantNotFound("Merchant: " + id + " not found!");
         }
 
@@ -139,13 +213,28 @@ public class MerchantController : ControllerBase
         return Ok(new DefaultResponseModel("Merchant with ID: " + id).ToString());
     }
 
+    /// <summary>
+    /// Deletes the specific Merchant with ID.
+    /// </summary>
+    /// <remarks>
+    ///     sample **request**:
+    ///
+    ///         DELETE /Merchant
+    ///         {
+    ///             "id": 0
+    ///         }
+    /// </remarks>
+    /// <response code="200">Deletes the specific Merchant with ID.</response>
+    /// <response code="400">Bad Request Error!!</response>
     [HttpDelete("{id}")]
+    [ProducesResponseType(typeof(MerchantCreateRequestModel[]), 200)]
+    [ProducesResponseType(typeof(ErrorResponseModel), 400)]
     public async Task<IActionResult> Delete(string id)
     {
         var existingMerchant = await _service.Get(id);
         if (existingMerchant == null)
         {
-            _logger.LogWarning("Merchant with id {MerchantId} not found!", id);
+            _logger.LogError("Merchant with id {MerchantId} not found!", id);
             throw new MerchantNotFound("Merchant: " + id + " not found!");
         }
 
