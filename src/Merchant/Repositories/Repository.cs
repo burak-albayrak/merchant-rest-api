@@ -6,7 +6,7 @@ namespace Merchant.Repositories;
 
 public class Repository : IRepository //Database(data access layer) (database ile haberleşecek olan katman)
 {
-    private IMongoCollection<Merchant> _collection;
+    private readonly IMongoCollection<Merchant> _collection;
     private readonly ILogger<Repository> _logger;
 
     public Repository(IMongoCollection<Merchant> collection, ILogger<Repository> logger)
@@ -15,9 +15,9 @@ public class Repository : IRepository //Database(data access layer) (database il
         _logger = logger;
     }
 
-    public Merchant Get(string id)
+    public async Task<Merchant> Get(string id)
     {
-        var merchant = _collection.Find(i => i.Id == id).FirstOrDefault();
+        var merchant = await _collection.Find(i => i.Id == id).FirstOrDefaultAsync();
 
         if (merchant == null)
         {
@@ -31,9 +31,9 @@ public class Repository : IRepository //Database(data access layer) (database il
         return merchant;
     }
 
-    public List<Merchant> GetAll(int page, int pageSize,
-        MerchantFilterModel filter,
-        MerchantSortModel sort)
+    public async Task<List<Merchant>> GetAll(int page, int pageSize,
+        FilterModel filter,
+        SortModel sort)
     {
         var filterDefinition = Builders<Merchant>.Filter.Empty;
 
@@ -45,48 +45,48 @@ public class Repository : IRepository //Database(data access layer) (database il
         var sortDirection = sort.SortOrder.ToLower() == "desc" ? -1 : 1;
         var sortField = sort.SortBy;
 
-        var sortDefinition = Builders<Merchant>.Sort.Ascending(sortField); 
+        var sortDefinition = Builders<Merchant>.Sort.Ascending(sortField);
 
         if (sortDirection == -1)
         {
             sortDefinition = Builders<Merchant>.Sort.Descending(sortField);
         }
 
-        var result = _collection.Find(filterDefinition)
+        var result = await _collection.Find(filterDefinition)
             .Sort(sortDefinition)
             .Limit(pageSize)
             .Skip((page - 1) * pageSize)
-            .ToList();
+            .ToListAsync();
 
         _logger.LogInformation("Retrieved {MerchantCount} merchants", result.Count);
 
         return result;
     }
 
-    public void Post(MerchantCreateRequestModel request)
+    public async Task Post(MerchantCreateRequestModel request)
     {
         var merchant = new Merchant(request.Name, request.Address);
-        _collection.InsertOne(merchant);
+        await _collection.InsertOneAsync(merchant);
         _logger.LogInformation("Merchant created successfully");
     }
 
-    public long Update(Merchant existingMerchant)
+    public async Task<long> Update(Merchant existingMerchant)
     {
         var filter = Builders<Merchant>.Filter.Eq(m => m.Id, existingMerchant.Id);
         var update = Builders<Merchant>.Update
             .Set(m => m.Name, existingMerchant.Name)
             .Set(m => m.Address, existingMerchant.Address);
 
-        var updateInfo = _collection.UpdateOne(filter, update);
+        var updateInfo = await _collection.UpdateOneAsync(filter, update);
         _logger.LogInformation("Merchant updated successfully");
 
         return updateInfo.MatchedCount;
     }
 
-    public void Delete(Merchant existingMerchant)
+    public async Task Delete(Merchant existingMerchant)
     {
         var filter = Builders<Merchant>.Filter.Eq(m => m.Id, existingMerchant.Id);
-        _collection.DeleteOne(filter);
+        await _collection.DeleteOneAsync(filter);
         _logger.LogInformation("Merchant deleted successfully!");
     }
 }

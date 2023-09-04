@@ -4,9 +4,9 @@ namespace Merchant.Repositories;
 
 public interface IRepository
 {
-    public Merchant Get(string id);
-    List<Merchant> GetAll(int page, int pageSize, MerchantFilterModel filter, MerchantSortModel sort);
-    public void Post(MerchantCreateRequestModel request);
-    void Delete(Merchant existingMerchant);
-    long Update(Merchant existingMerchant);
+    Task<Merchant> Get(string id);
+    Task<List<Merchant>> GetAll(int page, int pageSize, FilterModel filter, SortModel sort);
+    Task Post(MerchantCreateRequestModel request);
+    Task Delete(Merchant existingMerchant);
+    Task<long> Update(Merchant existingMerchant);
 }

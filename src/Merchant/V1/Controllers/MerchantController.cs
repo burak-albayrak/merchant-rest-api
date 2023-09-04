@@ -3,6 +3,7 @@ using Merchant.Services;
 using Merchant.V1.Models.RequestModels;
 using Merchant.V1.Models.ResponseModels;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Net.Mime;
@@ -23,9 +24,9 @@ public class MerchantController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public IActionResult Get([FromRoute] string id)
+    public async Task<IActionResult> Get([FromRoute] string id)
     {
-        var merchant = _service.Get(id);
+        var merchant = await _service.Get(id);
         if (merchant == null)
         {
             _logger.LogWarning("Merchant with id {MerchantId} not found!", id);
@@ -58,10 +59,10 @@ public class MerchantController : ControllerBase
     [HttpGet("All")]
     [ProducesResponseType(typeof(MerchantResponseModel[]), 200)]
     [ProducesResponseType(typeof(ErrorResponseModel), 400)]
-    public IActionResult GetAll(
+    public async Task<IActionResult> GetAll(
         [FromQuery] PaginationRequestModel request,
-        [FromQuery] MerchantFilterModel filter,
-        [FromQuery] MerchantSortModel sort)
+        [FromQuery] FilterModel filter,
+        [FromQuery] SortModel sort)
     {
         var sortValidator = new SortingValidator();
         var result = sortValidator.Validate(sort);
@@ -77,7 +78,7 @@ public class MerchantController : ControllerBase
             return BadRequest(errorResponse);
         }
     
-        var allMerchants = _service.GetAll(request.Page, request.PageSize, filter, sort);
+        var allMerchants = await _service.GetAll(request.Page, request.PageSize, filter, sort);
 
         if (allMerchants == null || allMerchants.Count == 0)
         {
@@ -100,18 +101,18 @@ public class MerchantController : ControllerBase
 
 
     [HttpPost]
-    public IActionResult Post([FromBody] MerchantCreateRequestModel request)
+    public async Task<IActionResult> Post([FromBody] MerchantCreateRequestModel request)
     {
-        _service.Post(request);
+        await _service.Post(request);
 
         _logger.LogInformation("Merchant created successfully");
         return Created("Created", null);
     }
 
     [HttpPut("{id}")]
-    public IActionResult Put(string id, [FromBody] MerchantUpdateRequestModel request)
+    public async Task<IActionResult> Put(string id, [FromBody] MerchantUpdateRequestModel request)
     {
-        var count = _service.Update(id, request);
+        var count = await _service.Update(id, request);
         if (count == 0)
         {
             _logger.LogWarning("Merchant with id {MerchantId} not found!", id);
@@ -123,32 +124,32 @@ public class MerchantController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-    public IActionResult PatchName(string id, [FromQuery] string newName)
+    public async Task<IActionResult> PatchName(string id, [FromQuery] string newName)
     {
-        var existingMerchant = _service.Get(id);
+        var existingMerchant = await _service.Get(id);
         if (existingMerchant == null)
         {
             _logger.LogWarning("Merchant with id {MerchantId} not found!", id);
             throw new MerchantNotFound("Merchant: " + id + " not found!");
         }
 
-        _service.UpdateName(id, newName);
+        await _service.UpdateName(id, newName);
 
         _logger.LogInformation("Merchant name updated: {MerchantId}, New Name: {NewName}", id, newName);
         return Ok(new DefaultResponseModel("Merchant with ID: " + id).ToString());
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Delete(string id)
+    public async Task<IActionResult> Delete(string id)
     {
-        var existingMerchant = _service.Get(id);
+        var existingMerchant = await _service.Get(id);
         if (existingMerchant == null)
         {
             _logger.LogWarning("Merchant with id {MerchantId} not found!", id);
             throw new MerchantNotFound("Merchant: " + id + " not found!");
         }
 
-        _service.Delete(id);
+        await _service.Delete(id);
 
         _logger.LogInformation("Merchant deleted successfully: {MerchantId}", id);
         return Ok(new DefaultResponseModel("Merchant with ID: " + id).ToString());

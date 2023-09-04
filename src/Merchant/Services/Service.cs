@@ -16,9 +16,9 @@ public class Service : IService
         _logger = logger;
     }
 
-    public Merchant Get(string id)
+    public async Task<Merchant> Get(string id)
     {
-        var merchant = _repository.Get(id);
+        var merchant = await _repository.Get(id);
 
         if (merchant == null)
         {
@@ -32,23 +32,23 @@ public class Service : IService
         return merchant;
     }
 
-    public List<Merchant> GetAll(int page, int pageSize, MerchantFilterModel filter, MerchantSortModel sort)
+    public async Task<List<Merchant>> GetAll(int page, int pageSize, FilterModel filter, SortModel sort)
     {
-        var allMerchants = _repository.GetAll(page, pageSize, filter, sort);
+        var allMerchants = await _repository.GetAll(page, pageSize, filter, sort);
         _logger.LogInformation("Retrieved {MerchantCount} merchants", allMerchants.Count);
 
         return allMerchants;
     }
 
-    public void Post(MerchantCreateRequestModel request)
+    public async Task Post(MerchantCreateRequestModel request)
     {
-        _repository.Post(request);
+        await _repository.Post(request);
         _logger.LogInformation("Merchant created successfully");
     }
 
-    public long Update(string id, MerchantUpdateRequestModel request)
+    public async Task<long> Update(string id, MerchantUpdateRequestModel request)
     {
-        var existingMerchant = _repository.Get(id);
+        var existingMerchant = await _repository.Get(id);
         if (existingMerchant == null)
         {
             throw new MerchantNotFound("Merchant not found");
@@ -57,15 +57,15 @@ public class Service : IService
         existingMerchant.Name = request.Name;
         existingMerchant.Address = request.Address;
 
-        var count = _repository.Update(existingMerchant);
+        var count = await _repository.Update(existingMerchant);
         _logger.LogInformation("Merchant updated successfully");
 
         return count;
     }
 
-    public long UpdateName(string id, string newName)
+    public async Task<long> UpdateName(string id, string newName)
     {
-        var existingMerchant = _repository.Get(id);
+        var existingMerchant = await _repository.Get(id);
         if (existingMerchant == null)
         {
             throw new MerchantNotFound("Merchant Not Found!");
@@ -73,21 +73,21 @@ public class Service : IService
 
         existingMerchant.Name = newName;
 
-        var count = _repository.Update(existingMerchant);
+        var count = await _repository.Update(existingMerchant);
         _logger.LogInformation("Merchant name updated: {MerchantId}, New Name: {NewName}", id, newName);
 
         return count;
     }
 
-    public void Delete(string id)
+    public async Task Delete(string id)
     {
-        var existingMerchant = _repository.Get(id);
+        var existingMerchant = await _repository.Get(id);
         if (existingMerchant == null)
         {
             throw new MerchantNotFound("Merchant Not Found!");
         }
 
-        _repository.Delete(existingMerchant);
+        await _repository.Delete(existingMerchant);
         _logger.LogInformation("Merchant deleted successfully: {MerchantId}", id);
     }
 }

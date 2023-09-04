@@ -3,7 +3,7 @@ using Merchant.V1.Models.RequestModels;
 
 namespace Merchant.V1;
 
-public class SortingValidator : AbstractValidator<MerchantSortModel>
+public class SortingValidator : AbstractValidator<SortModel>
 {
     public SortingValidator()
     {
