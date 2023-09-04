@@ -18,9 +18,9 @@ public class SortValidator : AbstractValidator<SortModel>
 
     private bool BeAValidField(string sortBy)
     {
-        List<string> supportedFields = new List<string> { "name" };
+        List<string> supportedFields = new List<string> { "name","reviewCount" };
 
-        return supportedFields.Contains(sortBy);
+        return supportedFields.Contains(sortBy.ToLower());
     }
 
     private bool BeAValidOrder(string sortOrder)

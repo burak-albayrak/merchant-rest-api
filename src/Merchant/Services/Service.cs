@@ -94,6 +94,7 @@ public class Service : IService
         }
 
         await _repository.Delete(existingMerchant);
+        
         _logger.LogInformation("Merchant deleted successfully: {MerchantId}", id);
     }
 }

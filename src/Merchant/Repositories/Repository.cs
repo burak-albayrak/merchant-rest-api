@@ -87,10 +87,16 @@ public class Repository : IRepository //Database(data access layer) (database il
         return updateInfo.MatchedCount;
     }
 
-    public async Task Delete(Merchant existingMerchant)
+    public async Task<long> Delete(Merchant existingMerchant)
     {
         var filter = Builders<Merchant>.Filter.Eq(m => m.Id, existingMerchant.Id);
-        await _collection.DeleteOneAsync(filter);
+        var deleteInfo = await _collection.DeleteOneAsync(filter);
+        if (deleteInfo.DeletedCount == 0)
+        {
+            _logger.LogWarning("delete");
+        }
         _logger.LogInformation("Merchant deleted successfully!");
+
+        return deleteInfo.DeletedCount;
     }
 }
