@@ -138,10 +138,10 @@ public class MerchantController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponseModel), 400)]
     public async Task<IActionResult> Post([FromBody] MerchantCreateRequestModel request)
     {
-        await _service.Post(request);
+        var createdMerchant = await _service.Post(request);
 
         _logger.LogInformation("Merchant created successfully");
-        return Created("Created", null);
+        return Created("Created", createdMerchant);
     }
 
     /// <summary>

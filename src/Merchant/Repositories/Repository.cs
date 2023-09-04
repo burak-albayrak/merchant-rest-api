@@ -63,11 +63,13 @@ public class Repository : IRepository //Database(data access layer) (database il
         return result;
     }
 
-    public async Task Post(MerchantCreateRequestModel request)
+    public async Task<Merchant> Post(MerchantCreateRequestModel request)
     {
         var merchant = new Merchant(request.Name, request.Address, request.ReviewStar, request.ReviewCount);
         await _collection.InsertOneAsync(merchant);
         _logger.LogInformation("Merchant created successfully");
+        
+        return merchant;
     }
 
     public async Task<long> Update(Merchant existingMerchant)

@@ -40,10 +40,11 @@ public class Service : IService
         return allMerchants;
     }
 
-    public async Task Post(MerchantCreateRequestModel request)
+    public async Task<Merchant> Post(MerchantCreateRequestModel request)
     {
-        await _repository.Post(request);
+        var createdMerchant = await _repository.Post(request);
         _logger.LogInformation("Merchant created successfully");
+        return createdMerchant;
     }
 
     public async Task<long> Update(string id, MerchantUpdateRequestModel request)
