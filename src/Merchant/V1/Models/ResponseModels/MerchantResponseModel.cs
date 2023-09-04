@@ -4,7 +4,10 @@ namespace Merchant.V1.Models.ResponseModels;
 public class MerchantResponseModel
 {
     public string Name { get; set; }
+    public double ReviewStar { get; set; }
+    public int ReviewCount { get; set; }
     public Address Address { get; set; }
+
 
     public List<MerchantResponseModel> NewModel(List<Merchant> merchants)
     {
@@ -14,6 +17,8 @@ public class MerchantResponseModel
             merchantResponseList.Add(new MerchantResponseModel()
             {
                 Name = m.Name,
+                ReviewStar = m.ReviewStar,
+                ReviewCount = m.ReviewCount,
                 Address = m.Address
             });
         }

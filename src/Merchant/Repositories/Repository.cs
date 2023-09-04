@@ -31,7 +31,9 @@ public class Repository : IRepository //Database(data access layer) (database il
         return merchant;
     }
 
-    public List<Merchant> GetAll(int page, int pageSize, MerchantFilterModel filter, MerchantSortingModel sorting)
+    public List<Merchant> GetAll(int page, int pageSize,
+        MerchantFilterModel filter,
+        MerchantSortModel sort)
     {
         var filterDefinition = Builders<Merchant>.Filter.Empty;
 
@@ -39,20 +41,28 @@ public class Repository : IRepository //Database(data access layer) (database il
         {
             filterDefinition &= Builders<Merchant>.Filter.Eq("address.city", filter.City);
         }
-        var sortDirection = sorting.SortDirection.ToLower() == "desc" ? -1 : 1;
-        var sortField = sorting.SortField;
-        
-        var allMerchants = _collection.Find(filterDefinition)
-            .Sort(Builders<Merchant>.Sort.Ascending(sortField))
+
+        var sortDirection = sort.SortOrder.ToLower() == "desc" ? -1 : 1;
+        var sortField = sort.SortBy;
+
+        var sortDefinition = Builders<Merchant>.Sort.Ascending(sortField); 
+
+        if (sortDirection == -1)
+        {
+            sortDefinition = Builders<Merchant>.Sort.Descending(sortField);
+        }
+
+        var result = _collection.Find(filterDefinition)
+            .Sort(sortDefinition)
             .Limit(pageSize)
-            .Skip((page - 1) * pageSize) // todo offset ile yap!
+            .Skip((page - 1) * pageSize)
             .ToList();
 
-        _logger.LogInformation("Retrieved {MerchantCount} merchants", allMerchants.Count);
+        _logger.LogInformation("Retrieved {MerchantCount} merchants", result.Count);
 
-        return allMerchants;
+        return result;
     }
-    
+
     public void Post(MerchantCreateRequestModel request)
     {
         var merchant = new Merchant(request.Name, request.Address);

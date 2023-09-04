@@ -11,10 +11,18 @@ public class Merchant
     [BsonElement("address")] 
     public Address Address { get; set; }
     
+    [BsonElement("reviewStar")]
+    public double ReviewStar { get; set; }
+
+    [BsonElement("reviewCount")]
+    public int ReviewCount { get; set; }
+
     public Merchant(string name, Address address)
     {
         Id = Guid.NewGuid().ToString();
         Name = name;
         Address = address;
+        ReviewStar = 0;
+        ReviewCount = 0;
     }
 }

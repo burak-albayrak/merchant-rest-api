@@ -1,9 +1,12 @@
+using System.Reflection;
 using Merchant.Configs;
 using Merchant.Middlewares;
 using Merchant.Repositories;
 using Merchant.Services;
 using MongoDB.Driver;
 using FluentValidation.AspNetCore;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Merchant;
 
@@ -49,7 +52,33 @@ public class Startup
             MongoDbSettings); // Register MongoDBSettings object to be created only once throughout the application.
         services.AddControllers(); // Adding ASP.NET Core Web API controllers.
         services.AddEndpointsApiExplorer(); // Adding the service required for generating API documentation.
-        services.AddSwaggerGen(); // Adding Swagger documentation generation feature.
+        services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "Merchant API",
+                Description = "Merchant Management API",
+                TermsOfService = new Uri("https://www.tesodev.com"),
+                Contact = new OpenApiContact
+                {
+                    Name = "Burak Albayrak",
+                    Email = "burak_albayrak0@icloud.com",
+                    Url = new Uri("https://www.instagram.com/burakk_albayrak/")
+                },
+                License = new OpenApiLicense
+                {
+                    Name = "TESODEV Open License",
+                    Url = new Uri("https://www.tesodev.com")
+                }
+            });
+            c.ExampleFilters();
+            // generate the xml docs that'll drive the swagger docs
+            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            c.IncludeXmlComments(xmlPath);
+        }); // Adding Swagger documentation generation feature.
+        services.AddSwaggerExamplesFromAssemblyOf<Startup>();
         services.AddResponseCompression(); // Adding compression service for responses.
         // Adding a concrete Service class corresponding to the IService interface.
         services.AddSingleton<IService, Service>();
@@ -74,7 +103,10 @@ public class Startup
     {
         app.UseDeveloperExceptionPage(); // Error handling
         app.UseSwagger(); //Swagger
-        app.UseSwaggerUI(); //Swagger
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Merchant Api v1");
+        }); //SwaggerUI option
         app.UseMiddleware<ErrorHandlingMiddleware>();
         app.UseCors("AllowAll"); // Enforce CORS policies.
         app.UseResponseCompression(); // Compresses data sent from the server to improve transmission speed.

@@ -8,6 +8,11 @@
         <RootNamespace>Merchant</RootNamespace>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
+    </PropertyGroup>
+    
     <ItemGroup>
         <PackageReference Include="FluentValidation" Version="11.7.1" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
@@ -15,12 +20,14 @@
         <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0-preview.7.23375.6" />
         <PackageReference Include="MongoDB.Driver" Version="2.21.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.8" />
     </ItemGroup>
 
     <ItemGroup>
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
+
 
 
 

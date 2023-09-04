@@ -5,6 +5,7 @@ using Merchant.V1.Models.ResponseModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.IO;
+using System.Net.Mime;
 
 namespace Merchant.V1.Controllers;
 
@@ -34,11 +35,49 @@ public class MerchantController : ControllerBase
         _logger.LogInformation("Merchant found: {MerchantName}", merchant.Name);
         return Ok(merchant);
     }
-
+    
+    /// <summary>
+    /// Returns all the Merchants in the database
+    /// </summary>
+    /// <remarks>
+    ///     sample **request**:
+    ///
+    ///         GET /Merchant/All
+    ///         {
+    ///             "name": "string",
+    ///             "reviewStar": 0,
+    ///             "reviewCount": 0,
+    ///             "address": {
+    ///                 "city": "string",
+    ///                 "cityCode": 0
+    ///             }
+    ///         }
+    /// </remarks>
+    /// <response code="200">Returns all the Merchants in the system</response>
+    /// <response code="400">Bad Request Error!</response>
     [HttpGet("All")]
-    public IActionResult GetAll([FromQuery] PaginationRequestModel request, [FromQuery] MerchantFilterModel filter, [FromQuery] MerchantSortingModel sorting)
+    [ProducesResponseType(typeof(MerchantResponseModel[]), 200)]
+    [ProducesResponseType(typeof(ErrorResponseModel), 400)]
+    public IActionResult GetAll(
+        [FromQuery] PaginationRequestModel request,
+        [FromQuery] MerchantFilterModel filter,
+        [FromQuery] MerchantSortModel sort)
     {
-        var allMerchants = _service.GetAll(request.Page, request.PageSize, filter, sorting);
+        var sortValidator = new SortingValidator();
+        var result = sortValidator.Validate(sort);
+
+        if (!result.IsValid)
+        {
+            _logger.LogError("Invalid sorting parameters!");
+            var errorResponse = new ErrorDetail()
+            {
+                StatusCode = 404,
+                Message = "Invalid sorting parameters."
+            };
+            return BadRequest(errorResponse);
+        }
+    
+        var allMerchants = _service.GetAll(request.Page, request.PageSize, filter, sort);
 
         if (allMerchants == null || allMerchants.Count == 0)
         {
@@ -58,6 +97,7 @@ public class MerchantController : ControllerBase
 
         return Ok(response);
     }
+
 
     [HttpPost]
     public IActionResult Post([FromBody] MerchantCreateRequestModel request)
