@@ -38,16 +38,28 @@ public class Repository : IRepository //Database(data access layer) (database il
     {
         var filterDefinition = Builders<Merchant>.Filter.Empty;
 
+
         if (!string.IsNullOrEmpty(filterRequest.City))
         {
-            filterDefinition &= Builders<Merchant>.Filter.Eq("address.city", filterRequest.City);
+            filterDefinition &= Builders<Merchant>.Filter.Eq(m => m.Address.City, filterRequest.City);
         }
-        
+
+        if (!string.IsNullOrEmpty(filterRequest.ReviewStarRange))
+        {
+            var reviewStarRange = filterRequest.ReviewStarRange.Split(",");
+
+            var lowerBound = uint.Parse(reviewStarRange[0]);
+            var upperBound = uint.Parse(reviewStarRange[1]);
+
+            filterDefinition &= Builders<Merchant>.Filter.Gt(m => (uint)m.ReviewStar, lowerBound) &
+                                Builders<Merchant>.Filter.Lt(m => (uint)m.ReviewStar, upperBound);
+        }
+
         var sortField = sortingRequest.SortBy;
         var sortDirection = sortingRequest.SortOrder.ToLower() == "desc" ? -1 : 1;
 
         SortDefinition<Merchant> sortDefinition;
-        
+
         if (sortDirection == -1)
         {
             sortDefinition = Builders<Merchant>.Sort.Descending(sortField);
@@ -73,7 +85,7 @@ public class Repository : IRepository //Database(data access layer) (database il
         var merchant = new Merchant(request.Name, request.Address, request.ReviewStar, request.ReviewCount);
         await _collection.InsertOneAsync(merchant);
         _logger.LogInformation("Merchant created successfully");
-        
+
         return merchant;
     }
 
@@ -100,6 +112,7 @@ public class Repository : IRepository //Database(data access layer) (database il
         {
             _logger.LogWarning("delete");
         }
+
         _logger.LogInformation("Merchant deleted successfully!");
 
         return deleteInfo.DeletedCount;
