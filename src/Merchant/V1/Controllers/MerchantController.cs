@@ -70,7 +70,8 @@ public class MerchantController : ControllerBase
     public async Task<IActionResult> GetAll(
         [FromQuery] PaginationRequestModel paginationRequest,
         [FromQuery] FilterRequestModel filterRequest,
-        [FromQuery] SortingRequestModel sortingRequest)
+        [FromQuery] SortingRequestModel sortingRequest,
+        [FromQuery] string? searchRequest)
     {
         var sortValidator = new SortingValidator();
         var result = sortValidator.Validate(sortingRequest);
@@ -86,7 +87,8 @@ public class MerchantController : ControllerBase
             return BadRequest(errorResponse);
         }
     
-        var allMerchants = await _service.GetAll(paginationRequest.Page, paginationRequest.PageSize, filterRequest, sortingRequest);
+        var allMerchants = await _service.GetAll(paginationRequest.Page, paginationRequest.PageSize, 
+            searchRequest, filterRequest, sortingRequest);
 
         if (allMerchants == null || allMerchants.Count == 0)
         {

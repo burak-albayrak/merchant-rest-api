@@ -2,6 +2,7 @@ using Merchant.Exceptions;
 using Merchant.Services;
 using Merchant.V1.Models.RequestModels;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Merchant.Repositories;
@@ -32,7 +33,7 @@ public class Repository : IRepository //Database(data access layer) (database il
         return merchant;
     }
 
-    public async Task<List<Merchant>> GetAll(int page, int pageSize,
+    public async Task<List<Merchant>> GetAll(int page, int pageSize, string? searchRequest,
         FilterRequestModel filterRequest,
         SortingRequestModel sortingRequest)
     {
@@ -53,6 +54,11 @@ public class Repository : IRepository //Database(data access layer) (database il
 
             filterDefinition &= Builders<Merchant>.Filter.Gt(m => (uint)m.ReviewStar, lowerBound) &
                                 Builders<Merchant>.Filter.Lt(m => (uint)m.ReviewStar, upperBound);
+        }
+        
+        if (!string.IsNullOrEmpty(searchRequest))
+        {
+            filterDefinition &= Builders<Merchant>.Filter.Regex(m => m.Name, new BsonRegularExpression(searchRequest, "i"));
         }
 
         var sortField = sortingRequest.SortBy;
