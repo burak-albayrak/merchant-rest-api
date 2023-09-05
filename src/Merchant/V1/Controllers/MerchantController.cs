@@ -68,12 +68,12 @@ public class MerchantController : ControllerBase
     [ProducesResponseType(typeof(MerchantResponseModel[]), 200)]
     [ProducesResponseType(typeof(ErrorResponseModel), 400)]
     public async Task<IActionResult> GetAll(
-        [FromQuery] PaginationRequestModel request,
-        [FromQuery] FilterModel filter,
-        [FromQuery] SortingModel sorting)
+        [FromQuery] PaginationRequestModel paginationRequest,
+        [FromQuery] FilterRequestModel filterRequest,
+        [FromQuery] SortingRequestModel sortingRequest)
     {
         var sortValidator = new SortingValidator();
-        var result = sortValidator.Validate(sorting);
+        var result = sortValidator.Validate(sortingRequest);
 
         if (!result.IsValid)
         {
@@ -86,7 +86,7 @@ public class MerchantController : ControllerBase
             return BadRequest(errorResponse);
         }
     
-        var allMerchants = await _service.GetAll(request.Page, request.PageSize, filter, sorting);
+        var allMerchants = await _service.GetAll(paginationRequest.Page, paginationRequest.PageSize, filterRequest, sortingRequest);
 
         if (allMerchants == null || allMerchants.Count == 0)
         {
@@ -100,8 +100,8 @@ public class MerchantController : ControllerBase
         var response = new
         {
             merchants = returnedMerchants,
-            page = request.Page,
-            pageSize = request.PageSize
+            page = paginationRequest.Page,
+            pageSize = paginationRequest.PageSize
         };
 
         return Ok(response);

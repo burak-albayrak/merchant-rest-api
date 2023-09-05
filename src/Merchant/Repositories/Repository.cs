@@ -33,18 +33,18 @@ public class Repository : IRepository //Database(data access layer) (database il
     }
 
     public async Task<List<Merchant>> GetAll(int page, int pageSize,
-        FilterModel filter,
-        SortingModel sorting)
+        FilterRequestModel filterRequest,
+        SortingRequestModel sortingRequest)
     {
         var filterDefinition = Builders<Merchant>.Filter.Empty;
 
-        if (!string.IsNullOrEmpty(filter.City))
+        if (!string.IsNullOrEmpty(filterRequest.City))
         {
-            filterDefinition &= Builders<Merchant>.Filter.Eq("address.city", filter.City);
+            filterDefinition &= Builders<Merchant>.Filter.Eq("address.city", filterRequest.City);
         }
         
-        var sortField = sorting.SortBy;
-        var sortDirection = sorting.SortOrder.ToLower() == "desc" ? -1 : 1;
+        var sortField = sortingRequest.SortBy;
+        var sortDirection = sortingRequest.SortOrder.ToLower() == "desc" ? -1 : 1;
 
         SortDefinition<Merchant> sortDefinition;
         
