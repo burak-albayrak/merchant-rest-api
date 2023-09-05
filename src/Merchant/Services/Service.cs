@@ -32,9 +32,10 @@ public class Service : IService
         return merchant;
     }
 
-    public async Task<List<Merchant>> GetAll(int page, int pageSize, FilterRequestModel filterRequest, SortingRequestModel sortingRequest)
+    public async Task<List<Merchant>> GetAll(int page, int pageSize, string? searchRequest,
+        FilterRequestModel filterRequest, SortingRequestModel sortingRequest)
     {
-        var allMerchants = await _repository.GetAll(page, pageSize, filterRequest, sortingRequest);
+        var allMerchants = await _repository.GetAll(page, pageSize, searchRequest, filterRequest, sortingRequest);
         _logger.LogInformation("Retrieved {MerchantCount} merchants", allMerchants.Count);
 
         return allMerchants;
