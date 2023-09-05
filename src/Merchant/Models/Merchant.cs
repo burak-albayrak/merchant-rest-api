@@ -22,7 +22,7 @@ public class Merchant
         Id = Guid.NewGuid().ToString();
         Name = name;
         Address = address;
-        ReviewStar = 0;
-        ReviewCount = 0;
+        ReviewStar = reviewStar;
+        ReviewCount = reviewCount;
     }
 }

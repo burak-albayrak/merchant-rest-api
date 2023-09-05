@@ -1,6 +1,7 @@
 using Merchant.Exceptions;
 using Merchant.Services;
 using Merchant.V1.Models.RequestModels;
+using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 
 namespace Merchant.Repositories;
@@ -33,7 +34,7 @@ public class Repository : IRepository //Database(data access layer) (database il
 
     public async Task<List<Merchant>> GetAll(int page, int pageSize,
         FilterModel filter,
-        SortModel sort)
+        SortingModel sorting)
     {
         var filterDefinition = Builders<Merchant>.Filter.Empty;
 
@@ -41,15 +42,19 @@ public class Repository : IRepository //Database(data access layer) (database il
         {
             filterDefinition &= Builders<Merchant>.Filter.Eq("address.city", filter.City);
         }
+        
+        var sortField = sorting.SortBy;
+        var sortDirection = sorting.SortOrder.ToLower() == "desc" ? -1 : 1;
 
-        var sortDirection = sort.SortOrder.ToLower() == "desc" ? -1 : 1;
-        var sortField = sort.SortBy;
-
-        var sortDefinition = Builders<Merchant>.Sort.Ascending(sortField);
-
+        SortDefinition<Merchant> sortDefinition;
+        
         if (sortDirection == -1)
         {
             sortDefinition = Builders<Merchant>.Sort.Descending(sortField);
+        }
+        else
+        {
+            sortDefinition = Builders<Merchant>.Sort.Ascending(sortField);
         }
 
         var result = await _collection.Find(filterDefinition)

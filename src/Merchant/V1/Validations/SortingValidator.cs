@@ -3,24 +3,22 @@ using Merchant.V1.Models.RequestModels;
 
 namespace Merchant.V1;
 
-public class SortValidator : AbstractValidator<SortModel>
+public class SortingValidator : AbstractValidator<SortingModel>
 {
-    public SortValidator()
+    public static readonly List<string> SupportedFields = new() { "name", "reviewcount", "reviewstar" };
+    public SortingValidator()
     {
         RuleFor(sortModel => sortModel.SortBy)
-            .NotEmpty().WithMessage("SortBy field is required.")
             .Must(BeAValidField).WithMessage("Invalid SortBy field.");
 
         RuleFor(sortModel => sortModel.SortOrder)
-            .NotEmpty().WithMessage("SortOrder field is required.")
             .Must(BeAValidOrder).WithMessage("Invalid SortOrder field.");
     }
 
     private bool BeAValidField(string sortBy)
     {
-        List<string> supportedFields = new List<string> { "name","reviewCount" };
 
-        return supportedFields.Contains(sortBy.ToLower());
+        return SupportedFields.Contains(sortBy.ToLower());
     }
 
     private bool BeAValidOrder(string sortOrder)

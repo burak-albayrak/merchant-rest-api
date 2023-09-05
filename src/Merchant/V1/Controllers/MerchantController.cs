@@ -52,7 +52,7 @@ public class MerchantController : ControllerBase
     }
     
     /// <summary>
-    /// Returns all Merchants in the database.
+    /// Get all merchants with optional pagination, searching, filtering, and sorting.
     /// </summary>
     /// <remarks>
     ///     sample **response**:
@@ -61,6 +61,7 @@ public class MerchantController : ControllerBase
     ///             'http://localhost:5188/Merchant/All?Page=1&amp;PageSize=17&amp;City=Ankara&amp;SortBy=name&amp;SortOrder=asc' \
     ///             -H 'accept: text/plain'
     /// </remarks>
+    /// <returns>A list of merchants.</returns>
     /// <response code="200">Returns all Merchants in the system.</response>
     /// <response code="400">Bad Request Error!!</response>
     [HttpGet("All")]
@@ -69,10 +70,10 @@ public class MerchantController : ControllerBase
     public async Task<IActionResult> GetAll(
         [FromQuery] PaginationRequestModel request,
         [FromQuery] FilterModel filter,
-        [FromQuery] SortModel sort)
+        [FromQuery] SortingModel sorting)
     {
-        var sortValidator = new SortValidator();
-        var result = sortValidator.Validate(sort);
+        var sortValidator = new SortingValidator();
+        var result = sortValidator.Validate(sorting);
 
         if (!result.IsValid)
         {
@@ -85,7 +86,7 @@ public class MerchantController : ControllerBase
             return BadRequest(errorResponse);
         }
     
-        var allMerchants = await _service.GetAll(request.Page, request.PageSize, filter, sort);
+        var allMerchants = await _service.GetAll(request.Page, request.PageSize, filter, sorting);
 
         if (allMerchants == null || allMerchants.Count == 0)
         {
