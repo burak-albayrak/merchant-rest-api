@@ -1,6 +1,6 @@
-using System.ComponentModel.DataAnnotations;
+/*namespace Merchant.V1.Models.RequestModels;
 
-public class SearchRequestModel
+public class MerchantSearchModel
 {
-    public string SearchName { get; set; } = "name";
-}
+    public string SearchQuery { get; set; }
+}*/
